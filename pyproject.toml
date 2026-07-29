@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "file-organizer"
+version = "0.2.0"
+description = "AI-powered file organizer with semantic search"
+requires-python = ">=3.10"
+dependencies = [
+    "watchdog>=4.0.0",
+    "sentence-transformers>=3.0.0",
+    "faiss-cpu>=1.7.0",
+    "PyMuPDF>=1.23.0",
+    "python-docx>=1.0.0",
+]
+
+[project.optional-dependencies]
+magic = ["python-magic>=0.4.27"]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+file-organizer = "organizer.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["organizer*"]
