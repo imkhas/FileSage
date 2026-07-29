@@ -9,3 +9,5 @@ file_index.db
 vector_store/
 .undo_*
 .openfileai/
+.env*
+*.env

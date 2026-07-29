@@ -21,12 +21,12 @@ def index_folders(folders: list[str], db_path: str | Path | None = None) -> int:
 
         log.info("Indexing %s ...", root)
         for file_path in root.rglob("*"):
-            if not file_path.is_file():
-                continue
-            if any(part.startswith(".") for part in file_path.parts):
-                continue
-
             try:
+                if not file_path.is_file():
+                    continue
+                if any(part.startswith(".") for part in file_path.parts):
+                    continue
+
                 stat = file_path.stat()
                 content = extract_text(file_path)
                 file_data = {

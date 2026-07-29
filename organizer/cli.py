@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import signal
 import sys
+import time
 
 from organizer.config_loader import load_config
 from organizer.logger import get_logger, setup_logger
@@ -29,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     org = sub.add_parser("organize", help="Organize files in a directory")
     org.add_argument("path", type=str, help="Directory to organize")
     org.add_argument("--dry-run", action="store_true", help="Simulate without moving files")
+    org.add_argument("--recursive", action="store_true", help="Organize files in subdirectories recursively")
 
     watch = sub.add_parser("watch", help="Watch a directory and auto-organize")
     watch.add_argument("path", type=str, help="Directory to watch")
@@ -58,20 +59,18 @@ def main() -> None:
     if args.command == "watch":
         config = load_config("config.json")
         start_watching(args.path, config)
-
-        def _stop(_signo, _frame):
+        log.info("Watching %s (Ctrl+C to stop)...", args.path)
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
             log.info("Shutting down watcher...")
             stop_watching()
             sys.exit(0)
 
-        signal.signal(signal.SIGINT, _stop)
-        signal.signal(signal.SIGTERM, _stop)
-        log.info("Watching %s (Ctrl+C to stop)...", args.path)
-        signal.pause()
-
     if args.command == "organize":
         config = load_config("config.json")
-        results = organize(args.path, config, dry_run=args.dry_run)
+        results = organize(args.path, config, dry_run=args.dry_run, recursive=args.recursive)
         print(generate_summary(results))
         return
 

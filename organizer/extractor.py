@@ -6,6 +6,8 @@ import fitz
 from docx import Document
 
 
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tiff", ".tif"}
+
 EXTRACTABLE_EXTENSIONS = {
     ".txt", ".md", ".py", ".js", ".ts", ".html", ".css", ".json",
     ".xml", ".yaml", ".yml", ".toml", ".cfg", ".ini", ".sh", ".bat",
@@ -23,9 +25,23 @@ def extract_text(path: str | Path) -> str:
         return _extract_pdf(path)
     if ext == ".docx":
         return _extract_docx(path)
+    if ext in IMAGE_EXTENSIONS:
+        return _extract_image(path)
     if ext in EXTRACTABLE_EXTENSIONS:
         return _extract_plain(path)
     return ""
+
+
+def _extract_image(path: Path) -> str:
+    try:
+        from PIL import Image
+        import pytesseract
+
+        with Image.open(path) as img:
+            text = pytesseract.image_to_string(img)
+            return text[:MAX_TEXT_LENGTH].strip()
+    except Exception:
+        return ""
 
 
 def _extract_pdf(path: Path) -> str:

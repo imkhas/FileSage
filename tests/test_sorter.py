@@ -23,8 +23,12 @@ def _dir(contents: list[str]) -> str:
 def test_scan_directory_returns_files():
     d = _dir(["a.jpg", "b.pdf", "sub/c.png"])
     files = scan_directory(d)
-    names = sorted(str(f.relative_to(d)) for f in files)
-    assert names == ["a.jpg", "b.pdf", "sub/c.png"]
+    names = sorted(f.relative_to(d).as_posix() for f in files)
+    assert names == ["a.jpg", "b.pdf"]
+
+    files_rec = scan_directory(d, recursive=True)
+    names_rec = sorted(f.relative_to(d).as_posix() for f in files_rec)
+    assert names_rec == ["a.jpg", "b.pdf", "sub/c.png"]
 
 
 def test_scan_directory_ignores_hidden():
