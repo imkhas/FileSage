@@ -1,0 +1,13 @@
+{
+    "Finance": [".pdf", ".xls", ".xlsx", ".csv"],
+    "Career": [".pdf", ".docx", ".txt"],
+    "Education": [".pdf", ".docx", ".pptx", ".txt", ".md"],
+    "Projects": [".pdf", ".docx", ".md", ".zip", ".py", ".ipynb"],
+    "Personal": [".pdf", ".jpg", ".jpeg", ".png"],
+    "Legal": [".pdf", ".docx", ".txt"],
+    "Screenshots": [".png", ".jpg", ".jpeg", ".webp"],
+    "Audio": [".mp3", ".wav", ".flac"],
+    "Video": [".mp4", ".mkv", ".mov"],
+    "Archives": [".zip", ".tar", ".gz", ".7z"],
+    "Code": [".py", ".js", ".ts", ".html", ".css", ".json", ".yaml", ".yml", ".ipynb"]
+}

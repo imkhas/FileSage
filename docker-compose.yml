@@ -1,0 +1,11 @@
+services:
+  file-organizer:
+    build: .
+    image: openfileai/file-organizer:latest
+    volumes:
+      - ./data:/data
+    # Example: preview organization of the mounted folder.
+    # Change the command to run anything the CLI supports, e.g.
+    #   command: ["organize", "/data"]
+    #   command: ["smart", "/data", "--dry-run"]
+    command: ["organize", "/data", "--dry-run"]

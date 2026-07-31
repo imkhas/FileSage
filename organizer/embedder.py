@@ -1,7 +1,26 @@
 from __future__ import annotations
 
+import logging
+import os
+
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+
 import numpy as np
+from transformers.utils import logging as tf_logging
+
 from sentence_transformers import SentenceTransformer
+
+tf_logging.set_verbosity_error()
+tf_logging.disable_progress_bar()
+
+for _name in (
+    "huggingface_hub",
+    "huggingface_hub.utils._http",
+    "httpx",
+    "httpcore",
+    "sentence_transformers",
+):
+    logging.getLogger(_name).setLevel(logging.ERROR)
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 _model: SentenceTransformer | None = None

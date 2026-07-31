@@ -1,0 +1,17 @@
+.git/
+.gitignore
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+logs/
+tests/
+docs/
+examples/
+sample_test_folder/
+file_index.db
+vector_store/
+.undo_*
+.openfileai/
+.env*

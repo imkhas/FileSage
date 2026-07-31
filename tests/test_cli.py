@@ -34,3 +34,17 @@ def test_missing_path_errors():
     args = _parse([])
     assert args.command is None
     assert args.undo is None
+
+
+def test_smart_subcommand():
+    args = _parse(["smart", "/some/path", "--dry-run"])
+    assert args.command == "smart"
+    assert args.path == "/some/path"
+    assert args.dry_run is True
+    assert args.recursive is False
+
+
+def test_smart_yes_flag():
+    args = _parse(["smart", "/some/path", "-y"])
+    assert args.command == "smart"
+    assert args.yes is True
