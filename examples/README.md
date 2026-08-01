@@ -3,7 +3,7 @@
 | Example | What it shows |
 |---|---|
 | `config.custom.json` | Meaning-based categories (Finance, Career, Education, ...) with overlapping extensions |
-| `sample_usage.py` | Using OpenFileAI as a Python library (organize with dry-run) |
+| `sample_usage.py` | Using FileSage as a Python library (organize with dry-run) |
 
 ## Try the custom config
 

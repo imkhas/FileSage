@@ -1,6 +1,6 @@
 # FileSage Command Reference Guide
 
-This document lists all available CLI commands for **FileSage / OpenFileAI**, their exact usage syntax, flags, and detailed explanations of what each command does.
+This document lists all available CLI commands for **FileSage**, their exact usage syntax, flags, and detailed explanations of what each command does.
 
 > **Note:** In the examples below, replace `<PATH>` (and `<PATH1>`, `<PATH2>`, ...) with the actual folder(s) you want to work on, e.g. `~/Downloads` or `D:\Documents`.
 
@@ -145,3 +145,17 @@ file-organizer smart <PATH> --recursive
 ```
 - **Description:** Analyzes the folder and all nested subdirectories.
 - **When to use:** For a full cleanup pass across nested folders.
+
+## 6. Desktop GUI (`gui`)
+
+### Launch the Desktop App
+```powershell
+file-organizer gui
+```
+- **Description:** Opens a desktop window (powered by pywebview/WebView2) with four tabs:
+  - **Organize** — preview or apply sorting, and undo the last run
+  - **Smart** — analyze suggestions (category moves, renames, duplicates) and apply them
+  - **Watch** — toggle real-time auto-organization with a live activity log
+  - **Search** — index folders, build/rebuild the vector index, check status, and run natural-language searches
+- **UI:** The interface is plain HTML/CSS/JS (`organizer/webui/`), so the look and feel can be customized entirely with CSS.
+- **When to use:** A graphical alternative to the CLI commands; the terminal remains fully functional.

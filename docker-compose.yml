@@ -1,7 +1,7 @@
 services:
   file-organizer:
     build: .
-    image: openfileai/file-organizer:latest
+    image: filesage/file-organizer:latest
     volumes:
       - ./data:/data
     # Example: preview organization of the mounted folder.

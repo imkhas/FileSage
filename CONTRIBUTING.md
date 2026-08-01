@@ -1,6 +1,6 @@
-# Contributing to OpenFileAI
+# Contributing to FileSage
 
-Thank you for contributing! OpenFileAI is a privacy-first, local AI file assistant. The core rule of this project:
+Thank you for contributing! FileSage is a privacy-first, local AI file assistant. The core rule of this project:
 
 > **No user data ever leaves the device.** Any change that uploads, streams, or transmits user files or metadata to external services will be rejected.
 

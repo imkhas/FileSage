@@ -88,6 +88,7 @@ pip install -e .
 | `smart <path>` | Suggest category moves, renames, and duplicate handling |
 | `smart <path> --dry-run` | Preview smart suggestions without changing anything |
 | `smart <path> --yes` | Apply all smart suggestions without prompting |
+| `gui` | Launch the desktop GUI (organize, smart, watch, search) |
 
 ---
 
@@ -139,7 +140,7 @@ See [`examples/`](examples/) for a custom meaning-based `config.json` and progra
 ## Project Structure
 
 ```
-OpenFileAI/
+FileSage/
 ├── organizer/
 │   ├── cli.py              # CLI entry point and argument parsing
 │   ├── sorter.py           # Core organize/undo logic
@@ -157,6 +158,11 @@ OpenFileAI/
 │   ├── renamer.py          # Clean filename suggestions
 │   ├── duplicate_detector.py # Content/visual duplicate detection
 │   └── smart.py            # AI category + rename + duplicate suggestions
+│   ├── gui.py              # pywebview desktop GUI entry point
+│   └── webui/              # HTML/CSS/JS interface for the GUI
+│       ├── index.html
+│       ├── style.css
+│       └── app.js
 ├── tests/
 │   ├── test_sorter.py
 │   ├── test_config.py
@@ -169,6 +175,7 @@ OpenFileAI/
 │   ├── test_embedder.py
 │   ├── test_vector_store.py
 │   └── test_search.py
+│   └── test_gui.py
 ├── config.json
 ├── docs/                  # User + architecture documentation
 ├── examples/              # Sample configs and usage

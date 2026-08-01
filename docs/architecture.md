@@ -1,6 +1,6 @@
 # Architecture
 
-OpenFileAI is a Python CLI organized around three capabilities: **organizing**, **smart suggestions**, and **semantic search**. Everything runs locally.
+FileSage is a Python CLI organized around three capabilities: **organizing**, **smart suggestions**, and **semantic search**. Everything runs locally.
 
 ```
                     file-organizer (CLI)

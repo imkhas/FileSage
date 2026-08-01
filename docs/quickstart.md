@@ -40,7 +40,7 @@ file-organizer --undo ~/Downloads
 
 ## 2. Smart suggestions (AI)
 
-OpenFileAI suggests meaning-based categories, clean filenames, and duplicate files. Nothing is modified without your approval:
+FileSage suggests meaning-based categories, clean filenames, and duplicate files. Nothing is modified without your approval:
 
 ```bash
 file-organizer smart ~/Downloads --dry-run
