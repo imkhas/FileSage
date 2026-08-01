@@ -1,4 +1,4 @@
-# OpenFileAI
+# FileSage
 
 Privacy-first local AI file intelligence assistant. Organize files by type and search them using natural language — all offline, no data leaves your computer.
 
