@@ -75,6 +75,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--yes", "-y", action="store_true", help="Apply all suggestions without prompting"
     )
 
+    sub.add_parser("gui", help="Launch the desktop GUI")
+
     return parser
 
 
@@ -204,6 +206,12 @@ def main() -> None:
                 log.info("%s: %s -> %s", r["action"], r["file"], r["detail"])
         applied = sum(1 for r in results if r["status"] == "applied")
         print(f"\nApplied {applied} action(s).")
+        return
+
+    if args.command == "gui":
+        from organizer.gui import launch
+
+        launch()
         return
 
     parser.print_help()

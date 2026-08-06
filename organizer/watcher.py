@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from typing import Callable
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
@@ -15,8 +16,13 @@ _OBSERVER: Observer | None = None
 
 
 class OrganizerHandler(FileSystemEventHandler):
-    def __init__(self, config: dict[str, list[str]]) -> None:
+    def __init__(
+        self,
+        config: dict[str, list[str]],
+        on_event: Callable[[str], None] | None = None,
+    ) -> None:
         self.config = config
+        self.on_event = on_event
         self.log = get_logger()
         self._recent: set[str] = set()
 
@@ -53,13 +59,19 @@ class OrganizerHandler(FileSystemEventHandler):
         try:
             safe_move(src, dest)
             self.log.info("Watch: moved %s -> %s", src.name, category)
+            if self.on_event:
+                self.on_event(f"moved {src.name} -> {category}/")
         except Exception as e:
             self.log.error("Watch: failed to move %s: %s", src.name, e)
         finally:
             self._recent.discard(key)
 
 
-def start_watching(path: str | Path, config: dict[str, list[str]]) -> None:
+def start_watching(
+    path: str | Path,
+    config: dict[str, list[str]],
+    on_event: Callable[[str], None] | None = None,
+) -> None:
     global _OBSERVER
     if _OBSERVER is not None:
         raise RuntimeError("Already watching")
@@ -68,7 +80,7 @@ def start_watching(path: str | Path, config: dict[str, list[str]]) -> None:
     target = Path(path).resolve()
     log.info("Starting watch on %s", target)
 
-    handler = OrganizerHandler(config)
+    handler = OrganizerHandler(config, on_event=on_event)
     observer = Observer()
     observer.schedule(handler, str(target), recursive=False)
     observer.start()

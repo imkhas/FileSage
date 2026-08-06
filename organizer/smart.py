@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-import re
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
+
 from organizer.duplicate_detector import find_duplicates
 from organizer.duplicate_handler import resolve_destination
+from organizer.embedder import embed_texts
 from organizer.extractor import extract_text
 from organizer.logger import get_logger
 from organizer.renamer import suggest_name
@@ -40,52 +43,57 @@ KEYWORDS: dict[str, list[str]] = {
     ],
 }
 
-_CATEGORY_SCORE_THRESHOLD = 3
-_NAME_KEYWORD_WEIGHT = 3
+_SEMANTIC_THRESHOLD = 0.18
+
+_categorizer_lock = threading.Lock()
+_categorizer_cache: dict[tuple[str, ...], "SemanticCategorizer"] = {}
 
 
-def _keyword_hits(text: str) -> dict[str, int]:
-    lower = re.sub(r"[-_/\\]+", " ", text).lower()
-    hits: dict[str, int] = {}
-    for cat, words in KEYWORDS.items():
-        score = 0
-        for word in words:
-            if re.search(rf"\b{re.escape(word)}\b", lower):
-                score += 1
-        if score:
-            hits[cat] = score
-    return hits
+class SemanticCategorizer:
+    def __init__(self, categories: list[str]) -> None:
+        self.categories = categories
+        self._vectors = embed_texts([self._anchor(c) for c in categories])
+
+    @staticmethod
+    def _anchor(category: str) -> str:
+        words = KEYWORDS.get(category, [])[:8]
+        if words:
+            return f"{category}: {', '.join(words)}"
+        return category
+
+    def best(self, text: str) -> tuple[str | None, float]:
+        return self.best_many([text])[0]
+
+    def best_many(self, texts: list[str]) -> list[tuple[str | None, float]]:
+        results: list[tuple[str | None, float]] = []
+        for start in range(0, len(texts), 512):
+            batch = texts[start : start + 512]
+            vectors = embed_texts(batch)
+            scores = vectors @ self._vectors.T
+            best_indices = np.argmax(scores, axis=1)
+            best_scores = scores[np.arange(len(batch)), best_indices]
+            for i, idx in enumerate(best_indices):
+                score = float(best_scores[i])
+                if score >= _SEMANTIC_THRESHOLD:
+                    results.append((self.categories[int(idx)], score))
+                else:
+                    results.append((None, score))
+        return results
+
+
+def _get_categorizer(categories: list[str]) -> SemanticCategorizer:
+    key = tuple(sorted(categories))
+    with _categorizer_lock:
+        if key not in _categorizer_cache:
+            _categorizer_cache[key] = SemanticCategorizer(list(key))
+        return _categorizer_cache[key]
 
 
 def suggest_category(file: Path, config: dict[str, list[str]]) -> str | None:
     base = categorize_file(file, config)
-
-    name_hits: dict[str, int] = {}
-    name_tokens = re.split(r"[-_.\s]+", file.stem)
-    for cat, words in KEYWORDS.items():
-        score = 0
-        for word in words:
-            if any(
-                token.lower() == word or token.lower().startswith(word)
-                for token in name_tokens
-                if token
-            ):
-                score += _NAME_KEYWORD_WEIGHT
-        if score:
-            name_hits[cat] = score
-
-    content_hits = _keyword_hits(extract_text(file))
-
-    combined: dict[str, int] = {}
-    for cat in KEYWORDS:
-        combined[cat] = name_hits.get(cat, 0) + content_hits.get(cat, 0)
-
-    best, best_score = None, 0
-    for cat, score in combined.items():
-        if score > best_score:
-            best, best_score = cat, score
-
-    if best_score >= _CATEGORY_SCORE_THRESHOLD:
+    categorizer = _get_categorizer(list(KEYWORDS))
+    best, score = categorizer.best(f"{file.name}\n{extract_text(file)}")
+    if best is not None:
         return best
     return base
 
@@ -112,8 +120,12 @@ def analyze(
     files = scan_directory(root, recursive=recursive)
     report = SmartReport()
 
-    for f in files:
-        category = suggest_category(f, config)
+    categorizer = _get_categorizer(list(KEYWORDS))
+    texts = [f"{f.name}\n{extract_text(f)}" for f in files]
+    semantic = categorizer.best_many(texts)
+
+    for f, (best, _score) in zip(files, semantic):
+        category = best if best is not None else categorize_file(f, config)
         if category and f.parent.resolve() == (root / category).resolve():
             category = None
 

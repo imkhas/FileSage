@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import re
 import tempfile
 from pathlib import Path
 
+import numpy as np
+import pytest
+
+from organizer import smart
 from organizer.smart import (
     SmartReport,
     analyze,
@@ -12,6 +17,30 @@ from organizer.smart import (
 )
 
 RULES = {"Documents": [".pdf", ".txt"], "Images": [".png", ".jpg"]}
+
+_TOK_IDX: dict[str, int] = {}
+
+
+def _fake_embed(texts: list[str]) -> np.ndarray:
+    out = []
+    for text in texts:
+        vector = np.zeros(512)
+        for token in re.findall(r"[a-z0-9]+", text.lower()):
+            buckets = [token]
+            m = re.fullmatch(r"([a-z]+)\d+", token)
+            if m:
+                buckets.append(m.group(1))
+            for bucket in buckets:
+                idx = _TOK_IDX.setdefault(bucket, len(_TOK_IDX))
+                if idx < 512:
+                    vector[idx] += 1
+        out.append(vector)
+    return np.asarray(out, dtype=float)
+
+
+@pytest.fixture(autouse=True)
+def _no_model(monkeypatch):
+    monkeypatch.setattr(smart, "embed_texts", _fake_embed)
 
 
 def _dir(files: dict[str, str]) -> str:

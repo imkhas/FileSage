@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FileSage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <aside id="sidebar">
+      <div class="logo">
+        <span class="logo-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/>
+          </svg>
+        </span>
+        <span class="logo-name">FileSage</span>
+      </div>
+
+      <div class="nav-label">BROWSE</div>
+
+      <nav id="nav">
+        <button class="nav-item active" data-panel="organize">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/>
+          </svg>
+          <span>Organize</span>
+        </button>
+        <button class="nav-item" data-panel="smart">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Smart</span>
+        </button>
+        <button class="nav-item" data-panel="watch">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span>Watch</span>
+        </button>
+        <button class="nav-item" data-panel="search">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="M21 21l-4.3-4.3"/>
+          </svg>
+          <span>Search</span>
+        </button>
+      </nav>
+
+      <div id="version">v0.5.0</div>
+    </aside>
+
+    <main id="main">
+      <div id="folder-bar">
+        <button id="menu-toggle" class="icon-btn" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12h18"/>
+            <path d="M3 6h18"/>
+            <path d="M3 18h18"/>
+          </svg>
+        </button>
+        <div id="folder-field">
+          <svg id="folder-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/>
+          </svg>
+          <input id="folder-path" type="text" placeholder="Choose a folder..." autocomplete="off" spellcheck="false">
+        </div>
+        <button id="browse-btn" class="btn btn-ghost" type="button">Browse</button>
+      </div>
+
+      <div id="content">
+
+        <section class="panel active" id="panel-organize">
+          <header class="panel-head">
+            <h1>Organize</h1>
+            <p>Sort files into category folders</p>
+          </header>
+
+          <div class="action-card">
+            <button id="org-preview" class="btn btn-secondary" type="button">Preview</button>
+            <button id="org-apply" class="btn btn-primary" type="button">Organize</button>
+            <button id="org-undo" class="btn btn-ghost" type="button">Undo</button>
+            <label class="check">
+              <input id="org-recursive" type="checkbox">
+              <span>Recursive</span>
+            </label>
+            <span id="org-spinner" class="spinner" hidden></span>
+          </div>
+
+          <div class="output-card">
+            <div class="output-label">ACTIVITY</div>
+            <div class="output-log" id="log-organize"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-smart">
+          <header class="panel-head">
+            <h1>Smart Cleanup</h1>
+            <p>AI suggestions for moves, renames and duplicates</p>
+          </header>
+
+          <div class="action-card">
+            <div class="action-row">
+              <button id="smart-analyze" class="btn btn-secondary" type="button">Analyze</button>
+              <button id="smart-apply" class="btn btn-primary" type="button">Apply suggestions</button>
+              <label class="check">
+                <input id="smart-recursive" type="checkbox">
+                <span>Recursive</span>
+              </label>
+              <span id="smart-spinner" class="spinner" hidden></span>
+            </div>
+            <div class="action-row">
+              <label class="check">
+                <input id="smart-moves" type="checkbox" checked>
+                <span>Category moves</span>
+              </label>
+              <label class="check">
+                <input id="smart-renames" type="checkbox" checked>
+                <span>Renames</span>
+              </label>
+              <label class="check">
+                <input id="smart-dups" type="checkbox" checked>
+                <span>Duplicates</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="output-card">
+            <div class="output-label">ACTIVITY</div>
+            <div class="output-log" id="log-smart"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-watch">
+          <header class="panel-head">
+            <h1>Watch</h1>
+            <p>Auto-organize new files as they appear</p>
+          </header>
+
+          <div class="action-card">
+            <label class="switch">
+              <input id="watch-toggle" type="checkbox">
+              <span class="slider"></span>
+              <span class="switch-text">Watch this folder</span>
+            </label>
+            <p class="muted" id="watch-hint">New files in the watched folder are sorted automatically.</p>
+          </div>
+
+          <div class="output-card">
+            <div class="output-label">LIVE ACTIVITY</div>
+            <div class="output-log" id="log-watch"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-search">
+          <header class="panel-head">
+            <h1>Search</h1>
+            <p>Find files with natural language</p>
+          </header>
+
+          <div class="action-card">
+            <div class="action-row">
+              <input id="search-query" class="text-input grow" type="text" placeholder="Describe what you are looking for..." autocomplete="off" spellcheck="false">
+              <label class="select-wrap">
+                <select id="search-limit">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </label>
+              <button id="search-btn" class="btn btn-primary" type="button">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"/>
+                  <path d="M21 21l-4.3-4.3"/>
+                </svg>
+                Search
+              </button>
+              <span id="search-spinner" class="spinner" hidden></span>
+            </div>
+            <div class="action-row">
+              <input id="index-folder" class="text-input grow" type="text" placeholder="Folder to index..." autocomplete="off" spellcheck="false">
+              <button id="index-btn" class="btn btn-secondary" type="button">Index folder</button>
+              <button id="build-vectors-btn" class="btn btn-secondary" type="button">Build vectors</button>
+              <button id="status-btn" class="btn btn-ghost" type="button">Index status</button>
+            </div>
+          </div>
+
+          <div class="output-card">
+            <div class="output-label">RESULTS</div>
+            <div class="output-log" id="log-search"></div>
+          </div>
+        </section>
+
+      </div>
+
+      <div id="status-bar">Ready.</div>
+    </main>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
