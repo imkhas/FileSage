@@ -2,24 +2,26 @@
 
 This document lists all available CLI commands for **FileSage**, their exact usage syntax, flags, and detailed explanations of what each command does.
 
+> **Getting the CLI:** the commands below run through `file-organizer`. You get it by installing the package (`pip install file-organizer`), from source (see [README](README.md)), or via Docker (`docker compose run --rm file-organizer <command>`). On Windows, most people use the bundled app instead — the GUI covers all four panels (Organize, Smart, Watch, Search) with no terminal.
+
 > **Note:** In the examples below, replace `<PATH>` (and `<PATH1>`, `<PATH2>`, ...) with the actual folder(s) you want to work on, e.g. `~/Downloads` or `D:\Documents`.
 
 ---
 
 ## 1. Setup & Maintenance Commands
 
-### Install / Reinstall FileSage
+### Install / Reinstall FileSage (development)
 ```powershell
 python -m pip install -e ".[dev]"
 ```
-- **Description:** Installs FileSage in editable mode along with development dependencies (`pytest`, `torch`, `sentence-transformers`, `faiss-cpu`, etc.).
+- **Description:** Installs FileSage in editable mode along with development dependencies (`pytest`, `sentence-transformers`, `faiss-cpu`, etc.). End users should install with `pip install file-organizer` or use the Windows app instead.
 - **When to use:** Run once when first setting up the project or after cloning.
 
 ### Run Unit Tests
 ```powershell
 python -m pytest -v
 ```
-- **Description:** Runs all automated unit tests across `sorter`, `config`, `duplicates`, `cli`, `extractor`, `renamer`, `duplicate_detector`, and `smart` to verify system health.
+- **Description:** Runs all automated unit tests across `sorter`, `config`, `duplicates`, `cli`, `extractor`, `renamer`, `duplicate_detector`, `smart`, `embedder`, `vector_store`, `search`, and `gui` to verify system health.
 - **When to use:** Anytime you make code changes or want to ensure everything is working cleanly.
 
 ---

@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 import logging
+import sys
 import threading
 from collections import deque
 from pathlib import Path
 
 from organizer.config_loader import load_config
-from organizer.indexer import index_folders
 from organizer.logger import get_logger
-from organizer.search import search
-from organizer.smart import analyze, apply_actions
 from organizer.sorter import organize, undo
 from organizer.utils import generate_summary
-from organizer.vector_store import build_index, vector_build_status
 from organizer.watcher import start_watching, stop_watching
 
 _ATTACHED_HANDLERS: list[logging.Handler] = []
@@ -177,7 +174,9 @@ class FileSageApi:
             return "Enter a folder path first."
         self._log("smart", f"Analyzing {path}...")
         try:
-            report = analyze(Path(path), self._config(), recursive=recursive)
+            from organizer.smart import analyze as smart_analyze
+
+            report = smart_analyze(Path(path), self._config(), recursive=recursive)
         except Exception as e:  # noqa: BLE001
             self._log("smart", f"Analysis failed: {e}", "primary")
             return f"Analysis failed: {e}"
@@ -198,7 +197,9 @@ class FileSageApi:
             self._log("smart", "Run 'Analyze' first.", "dim")
             return 0
         try:
-            results = apply_actions(
+            from organizer.smart import apply_actions as smart_apply
+
+            results = smart_apply(
                 Path(path),
                 report,
                 apply_moves=apply_moves,
@@ -261,7 +262,9 @@ class FileSageApi:
             self._log("search", "Type a search query first.", "dim")
             return "Type a search query first."
         try:
-            results = search(query, limit=limit)
+            from organizer.search import search as semantic_search
+
+            results = semantic_search(query, limit=limit)
         except Exception as e:  # noqa: BLE001
             self._log("search", f"Search failed: {e}", "primary")
             return f"Search failed: {e}"
@@ -275,6 +278,8 @@ class FileSageApi:
             self._log("search", "Enter a folder to index.", "dim")
             return 0
         try:
+            from organizer.indexer import index_folders
+
             count = index_folders([folder])
         except Exception as e:  # noqa: BLE001
             self._log("search", f"Indexing failed: {e}", "primary")
@@ -285,7 +290,9 @@ class FileSageApi:
     def build_vectors(self) -> int:
         self._log("search", "Building vector index (resumable; progress below)...")
         try:
-            count = build_index()
+            from organizer.vector_store import build_index as vector_build
+
+            count = vector_build()
         except Exception as e:  # noqa: BLE001
             self._log("search", f"Vector build failed: {e}", "primary")
             return 0
@@ -294,7 +301,9 @@ class FileSageApi:
 
     def index_status(self) -> str:
         try:
-            status = vector_build_status()
+            from organizer.vector_store import vector_build_status as vector_status
+
+            status = vector_status()
         except Exception as e:  # noqa: BLE001
             self._log("search", f"Index status failed: {e}", "primary")
             return f"Index status failed: {e}"
@@ -304,7 +313,11 @@ class FileSageApi:
 
 
 def _load_app() -> Path:
-    return Path(__file__).resolve().parent / "webui" / "index.html"
+    if getattr(sys, "frozen", False):
+        base = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    else:
+        base = Path(__file__).resolve().parent
+    return base / "webui" / "index.html"
 
 
 def launch() -> None:

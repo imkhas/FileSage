@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 from pathlib import Path
 
@@ -44,3 +45,33 @@ def test_load_invalid_structure_raises():
             assert False, "Should have raised ValueError"
         except ValueError:
             pass
+
+
+def test_load_config_falls_back_to_package_default():
+    import os
+
+    with tempfile.TemporaryDirectory() as tmp:
+        old = os.getcwd()
+        os.chdir(tmp)
+        try:
+            result = load_config("config.json")
+            assert "Images" in result
+            assert ".jpg" in result["Images"]
+        finally:
+            os.chdir(old)
+
+
+def test_load_config_prefers_config_next_to_executable(monkeypatch):
+    import os
+
+    with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as exe_dir:
+            custom = {"Custom": [".xyz"]}
+            Path(exe_dir, "config.json").write_text(json.dumps(custom), encoding="utf-8")
+            monkeypatch.setattr(sys, "executable", str(Path(exe_dir, "app.exe")))
+            old = os.getcwd()
+            os.chdir(tmp)
+            try:
+                assert load_config("config.json") == custom
+            finally:
+                os.chdir(old)

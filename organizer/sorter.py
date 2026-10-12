@@ -10,7 +10,7 @@ from organizer.utils import ensure_directory, get_file_extension, is_locked, saf
 
 
 def scan_directory(path: str | Path, recursive: bool = False) -> list[Path]:
-    root = Path(path)
+    root = Path(path).expanduser()
     if not root.is_dir():
         raise NotADirectoryError(f"Not a directory: {root}")
 
@@ -125,7 +125,7 @@ def organize(
 
 def undo(undo_log_path: str | Path) -> int:
     log = get_logger()
-    path = Path(undo_log_path)
+    path = Path(undo_log_path).expanduser()
 
     if path.is_dir():
         logs = sorted(path.glob(".undo_*.jsonl"))

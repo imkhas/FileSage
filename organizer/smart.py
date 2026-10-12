@@ -91,7 +91,7 @@ def _get_categorizer(categories: list[str]) -> SemanticCategorizer:
 
 def suggest_category(file: Path, config: dict[str, list[str]]) -> str | None:
     base = categorize_file(file, config)
-    categorizer = _get_categorizer(list(KEYWORDS))
+    categorizer = _get_categorizer(list(set(KEYWORDS) | set(config)))
     best, score = categorizer.best(f"{file.name}\n{extract_text(file)}")
     if best is not None:
         return best
@@ -120,7 +120,7 @@ def analyze(
     files = scan_directory(root, recursive=recursive)
     report = SmartReport()
 
-    categorizer = _get_categorizer(list(KEYWORDS))
+    categorizer = _get_categorizer(list(set(KEYWORDS) | set(config)))
     texts = [f"{f.name}\n{extract_text(f)}" for f in files]
     semantic = categorizer.best_many(texts)
 

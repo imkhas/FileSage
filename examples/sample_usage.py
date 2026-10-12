@@ -6,8 +6,7 @@ from organizer.utils import generate_summary
 
 config = load_config("config.json")
 
-results = organize("~/Downloads", config, dry_run=True)
-print(generate_summary(results))
+downloads = Path.home() / "Downloads"
 
-results = organize("~/Downloads", config, dry_run=False)
+results = organize(downloads, config, dry_run=True)
 print(generate_summary(results))

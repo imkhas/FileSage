@@ -71,6 +71,12 @@ def test_suggest_category_falls_back_to_extension():
     assert suggest_category(Path(d) / "photo.png", RULES) == "Images"
 
 
+def test_suggest_category_custom_config_categories():
+    d = _dir({"playlist_music.txt": "songs for running"})
+    rules = {"Music": [".txt"], "Reports": [".docx"]}
+    assert suggest_category(Path(d) / "playlist_music.txt", rules) == "Music"
+
+
 def test_analyze_builds_report():
     d = _dir({
         "invoice_123.pdf": "invoice total payment",

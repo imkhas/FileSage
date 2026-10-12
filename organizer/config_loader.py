@@ -1,14 +1,39 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 
-def load_config(config_path: str | Path) -> dict[str, list[str]]:
+def _find_config_path(config_path: str | Path) -> Path:
     path = Path(config_path)
+    if path.exists():
+        return path
+
+    name = path.name or "config.json"
+    candidates: list[Path] = [
+        Path(sys.executable).resolve().parent / name,
+        Path(__file__).resolve().parent / name,
+    ]
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        candidates.append(Path(meipass) / name)
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return path
+
+
+def load_config(config_path: str | Path) -> dict[str, list[str]]:
+    path = _find_config_path(config_path)
 
     if not path.exists():
-        raise FileNotFoundError(f"Config file not found: {path}")
+        raise FileNotFoundError(
+            f"Config file not found: {config_path} "
+            "(searched the current directory, the executable's folder, "
+            "and the bundled package config)"
+        )
     if not path.is_file():
         raise ValueError(f"Config path is not a file: {path}")
 

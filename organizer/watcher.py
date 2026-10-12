@@ -77,7 +77,7 @@ def start_watching(
         raise RuntimeError("Already watching")
 
     log = get_logger()
-    target = Path(path).resolve()
+    target = Path(path).expanduser().resolve()
     log.info("Starting watch on %s", target)
 
     handler = OrganizerHandler(config, on_event=on_event)

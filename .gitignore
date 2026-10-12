@@ -11,3 +11,5 @@ vector_store/
 .openfileai/
 .env*
 *.env
+build/
+dist/
